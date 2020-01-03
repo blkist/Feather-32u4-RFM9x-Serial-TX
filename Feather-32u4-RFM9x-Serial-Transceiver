@@ -1,19 +1,19 @@
 #include <SPI.h>
 #include <RH_RF95.h>
 
-/* for feather32u4 */
+// for feather32u4
 #define RFM95_CS 8
 #define RFM95_RST 4
 #define RFM95_INT 7
 #define LED_BUILTIN 13
 
-// Change to 434.0 or other frequency, must match RX's freq!
+// must match RX's frequency!
 #define RF95_FREQ 433.0
  
-// Singleton instance of the radio driver
+// singleton instance of the radio driver
 RH_RF95 rf95(RFM95_CS, RFM95_INT);
 
-char inData[20]; // Allocate some space for the string
+char inData[100]; // Allocate some space for the string
 char inChar=-1; // Where to store the character read
 byte index = 0; // Index into array; where to store the character
 
@@ -52,10 +52,11 @@ void setup() {
 }
 
 void loop() {  
+
   
   // READ FROM SERIAL
   while (Serial.available() > 0) { 
-    if(index < 19) { // one less than the size of the array 
+    if(index < 99) { // one less than the size of the array 
       inChar = Serial.read(); // read a character
       inData[index] = inChar; // store it
       index++; // increment where to write next
@@ -75,11 +76,7 @@ void loop() {
 
   // SEND TO RADIO
   if (index > 0){ // Only send data if it hasn't been flushed
-    rf95.send((uint8_t*)inData,20); // send the data
-    // Serial.print(inChar);  // print what you type in your own serial console
-  
+    rf95.send((uint8_t*)inData,100); // send the data
     index=0; // Flush indexed data
-    // inChar=0;  // I don't think I need to clear this value.
-    // Serial.flush(); //flush serial data
   }
 }
